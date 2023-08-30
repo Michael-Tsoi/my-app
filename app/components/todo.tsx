@@ -16,17 +16,17 @@ export default function Todo() {
 
   useEffect(() => {
 
-    // taskRepo.find({
-    //     limit: 20,
-    //     orderBy: { createdAt: "asc" },
-    //     //where: { completed: true  }
-    // }).then(setTasks)
+    taskRepo.find({
+        limit: 20,
+        orderBy: { createdAt: "asc" },
+        //where: { completed: true  }
+    }).then(setTasks)
 
-    return taskRepo.liveQuery({
-      limit: 20,
-      orderBy: { createdAt: "asc" }
-    })
-    .subscribe(info => setTasks(info.applyChanges))
+    // return taskRepo.liveQuery({
+    //   limit: 20,
+    //   orderBy: { createdAt: "asc" }
+    // })
+    // .subscribe(info => setTasks(info.applyChanges))
     
   }, [])
 
@@ -34,11 +34,11 @@ export default function Todo() {
   const addTask = async (e: FormEvent) => {
     e.preventDefault()
     try {
-      //const newTask = 
+      const newTask = 
       await taskRepo.insert({ title: newTaskTitle })
 
     // ^ this no longer needs to be a variable as we are not using it to set the state.
-    // setTasks([...tasks, newTask])   <-- this line is no longer needed      
+       setTasks([...tasks, newTask])   // <-- this line is no longer needed if using liveQuery      
 
       setNewTaskTitle('')
     } catch (error) {
@@ -76,15 +76,15 @@ export default function Todo() {
           setTasks(tasks => tasks.map(t => (t === task ? value : t)))
 
           const setCompleted = async (completed: boolean) =>
-          //setTask(await taskRepo.save({ ...task, completed }))
-          await taskRepo.save({ ...task, completed })
+          setTask(await taskRepo.save({ ...task, completed })) // <-- this line is no longer needed if using liveQuery  
+          // await taskRepo.save({ ...task, completed })
 
           const setTitle = ( title: string ) => setTask({...task, title})
 
           const saveTask = async () => {
             try {
-              //setTask(await taskRepo.save(task))  
-              await taskRepo.save(task) // <- replace with this line
+              setTask(await taskRepo.save(task))  // <-- this line is no longer needed if using liveQuery  
+              // await taskRepo.save(task) // <- replace with this line
             } catch (error) {
               alert((error as { message: string}).message)
             }
@@ -93,7 +93,7 @@ export default function Todo() {
           const deleteTask = async () => {
             try {
               await taskRepo.delete(task)
-              //setTasks(tasks.filter(t => t !== task))
+              setTasks(tasks.filter(t => t !== task)) // <-- this line is no longer needed if using liveQuery  
             } catch (error) {
               alert((error as { message: string }).message)
             }
